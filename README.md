@@ -1,1 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harleston U13 Hurricanes Dashboard</title>
+
+<style>
+:root { --primary: #101828; --primary-soft: #1D2939; --accent: #7C5CFC; --accent-bright: #9B8AFB; --success: #12B76A; --warning: #F79009; --danger: #F04438; --background: #F7F8FC; --card-bg: #FFFFFF; --border: #E4E7EC; --muted: #667085; --text: #101828; --shadow-sm: 0 1px 2px rgba(16,24,40,0.05); --shadow-md: 0 8px 24px rgba(16,24,40,0.08); --radius-sm: 10px; --radius-md: 16px; --radius-lg: 24px; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body { font-family: Inter, Aptos, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: radial-gradient(circle at top right, rgba(124,92,252,0.08), transparent 32%), var(--background); color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 72%, #342A68 100%); color: #FFFFFF; padding: 20px 24px 14px; box-shadow: 0 10px 30px rgba(16,24,40,0.18); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.08); }
+
+.header-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-title h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header-title span {
+  font-size: 12px;
+  color: #e0e0e0;
+}
+
+/* Tab Bar */
+.tab-container { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 16px; overflow-x: auto; padding: 4px 0 8px; scrollbar-width: none; }
+
+.tab { padding: 9px 14px; cursor: pointer; font-weight: 600; user-select: none; border-radius: 10px; border: 1px solid transparent; background: transparent; color: rgba(255,255,255,0.72); font-size: 13px; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; opacity: 1; white-space: nowrap; }
+
+.tab:hover {
+  background: rgba(255,255,255,0.15);
+  opacity: 1;
+}
+.tab:focus-visible, button:focus-visible, select:focus-visible { outline: 3px solid #FDB022; outline-offset: 3px; box-shadow: 0 0 0 5px rgba(253,176,34,0.25); }
+
+.tab.active { background: rgba(255,255,255,0.12); color: #FFFFFF; border-color: rgba(255,255,255,0.18); box-shadow: inset 0 -2px 0 var(--accent-bright); opacity: 1; }
+
+/* Layout */
+main {
+  flex: 1;
+}
+
+.container { max-width: 1280px; margin: 0 auto; padding: 32px 24px 48px; }
+
+/* Sections */
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+.section-card { background: rgba(255,255,255,0.96); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-md); border: 1px solid rgba(228,231,236,0.9); margin-bottom: 20px; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+
+.section-card:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(16,24,40,0.10); border-color: #D0D5DD; }
+
+.section-card h2 { font-size: 20px; line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; color: var(--text); margin-bottom: 6px; }
+
+.section-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* Info boxes on Home */
+.info-box { padding: 18px; background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 12px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+
+.info-box h3 {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.matchday-hero { margin-top: 16px; padding: 24px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #101828 0%, #342A68 100%); color: #FFFFFF; box-shadow: 0 18px 42px rgba(16,24,40,0.18); position: relative; overflow: hidden; }
+.matchday-hero h3 { margin-bottom: 8px; color: #FFFFFF; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; }
+.matchday-fixture { font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.15; margin: 6px 0; }
+.snapshot-grid, .leaders-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+.snapshot-card, .leader-card { padding: 16px; border-radius: var(--radius-md); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.snapshot-card span, .leader-card span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.snapshot-card strong, .leader-card strong { display: block; margin-top: 6px; font-size: 22px; color: var(--text); line-height: 1.15; }
+/* Lists */
+.squad-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.squad-summary-card { padding: 16px; border-radius: var(--radius-md); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.squad-summary-card span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.squad-summary-card strong { display: block; margin-top: 6px; color: var(--text); font-size: 22px; }
+.staff-card { margin: 16px 0; padding: 18px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #101828 0%, #342A68 100%); color: #FFFFFF; box-shadow: 0 16px 36px rgba(16,24,40,0.16); }
+
+.staff-card span { display: block; color: rgba(255,255,255,0.72); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.squad-groups { display: grid; gap: 18px; margin-top: 18px; }
+.position-group { border: 1px solid rgba(124,92,252,0.14); border-radius: var(--radius-lg); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); padding: 16px; box-shadow: var(--shadow-sm); }
+.position-group h3 { margin-bottom: 12px; font-size: 16px; color: var(--text); }
+.squad-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.squad-card { padding: 14px; border-radius: var(--radius-md); background: #FFFFFF; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.position-pill { display: inline-flex; margin-top: 8px; padding: 5px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: #F8F7FF; color: var(--accent); }
+
+/* Fixtures */
+
+
+.fixtures-grid { display: grid; gap: 14px; margin-top: 16px; }
+.fixture-card { position: relative; overflow: hidden; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; padding: 18px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #FFFFFF 0%, #F8F7FF 100%); border: 1px solid rgba(124,92,252,0.16); box-shadow: 0 12px 30px rgba(16,24,40,0.08); }
+.fixture-date-badge { width: 72px; min-height: 72px; border-radius: 18px; display: grid; place-items: center; text-align: center; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #FFFFFF; box-shadow: 0 10px 22px rgba(124,92,252,0.24); font-weight: 800; }
+.fixture-date-badge span { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.82; }
+.fixture-date-badge strong { display: block; font-size: 24px; line-height: 1; }
+.fixture-opponent { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.fixture-meta { margin-top: 4px; color: var(--muted); font-size: 12px; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.football-pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: #F8F7FF; color: var(--accent); border: 1px solid rgba(124,92,252,0.18); }
+.football-pill.home { background: #ECFDF3; color: #027A48; border-color: rgba(18,183,106,0.24); }
+.football-pill.away { background: #EEF4FF; color: #3538CD; border-color: rgba(53,56,205,0.18); }
+.football-pill.tbc { background: #FFFAEB; color: #B54708; border-color: rgba(247,144,9,0.24); }
+.fixture-kickoff { text-align: right; min-width: 120px; color: var(--text); font-weight: 800; }
+.fixture-kickoff span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+/* Player Contributions Cards */
+#playerStats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+.player-card { position: relative; overflow: hidden; display: grid; gap: 10px; padding: 16px; margin-bottom: 0; border: 1px solid rgba(124,92,252,0.16); border-radius: var(--radius-md); font-size: 13px; background: linear-gradient(135deg, #FFFFFF 0%, #F8F7FF 100%); box-shadow: var(--shadow-sm); transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.player-card:hover { transform: translateY(-2px); border-color: rgba(124,92,252,0.32); box-shadow: 0 12px 28px rgba(16,24,40,0.10); }
+.player-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
+.player-card strong { font-size: 16px; color: var(--text); letter-spacing: -0.02em; }
+.contribution-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.contribution-pill { padding: 9px 10px; border-radius: 12px; background: #FFFFFF; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.contribution-pill span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.contribution-pill strong { display: block; margin-top: 3px; color: var(--text); font-size: 18px; }
+
+/* Heatmap Boxes */
+.heatmap-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.heat-box { min-width: 140px; min-height: 112px; flex: 1 1 160px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; border-radius: var(--radius-md); color: #101828; font-weight: 700; text-align: left; font-size: 13px; padding: 16px; border: 1px solid rgba(16,24,40,0.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16), var(--shadow-sm); }
+
+.heat-box small { font-size: 11px; color: #101828; font-weight: 600; }
+.heatmap-legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 10px; font-size: 12px; color: var(--muted); }
+.heatmap-scale { width: 140px; height: 10px; border-radius: 999px; background: linear-gradient(90deg, rgba(124,92,252,0.32), rgba(124,92,252,1)); border: 1px solid rgba(124,92,252,0.18); }
+
+/* Table wrapper */
+.table-wrapper { margin-top: 14px; border-radius: var(--radius-lg); border: 1px solid rgba(124,92,252,0.16); overflow: hidden; background: #FFFFFF; box-shadow: var(--shadow-md); }
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 400px;
+}
+
+thead { position: sticky; top: 0; z-index: 1; background: linear-gradient(135deg, #101828 0%, #342A68 100%); color: #FFFFFF; }
+
+th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #EAECF0; white-space: nowrap; }
+
+th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+tbody tr:nth-child(even) { background: #F8FAFC; }
+}
+
+tbody tr:hover { background: #F8F7FF; }
+td:last-child, th:last-child { font-weight: 800; color: var(--accent); background: rgba(124,92,252,0.06); }
+
+/* Match Timeline */
+.timeline-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin: 14px 0 4px; flex-wrap: wrap; }
+.timeline-toolbar label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.timeline-toolbar select { min-width: 210px; padding: 10px 36px 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: #FFFFFF; color: var(--text); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-sm); }
+.timeline-list { display: grid; gap: 16px; margin-top: 18px; }
+.timeline-card { position: relative; overflow: hidden; border-radius: var(--radius-lg); border: 1px solid rgba(124,92,252,0.16); background: linear-gradient(135deg, #FFFFFF 0%, #F8F7FF 100%); box-shadow: 0 14px 34px rgba(16,24,40,0.08); padding: 18px; cursor: pointer; transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; }
+.timeline-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: linear-gradient(180deg, var(--accent), var(--accent-bright)); }
+.timeline-card:hover, .timeline-card:focus-visible { transform: translateY(-3px); box-shadow: 0 22px 46px rgba(16,24,40,0.14); border-color: rgba(124,92,252,0.34); outline: none; }
+.timeline-card:focus-visible { outline: 3px solid #FDB022; outline-offset: 4px; }
+.timeline-card.result-w { border-color: rgba(18,183,106,0.25); background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 52%, #F8F7FF 100%); }
+.timeline-card.result-l { border-color: rgba(240,68,56,0.22); background: linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 52%, #F8F7FF 100%); }
+.timeline-card.result-d { border-color: rgba(247,144,9,0.24); background: linear-gradient(135deg, #FFFAEB 0%, #FFFFFF 52%, #F8F7FF 100%); }
+.timeline-topline { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 14px; }
+.timeline-date { display: block; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.timeline-fixture { margin-top: 4px; font-size: 17px; color: var(--text); font-weight: 800; letter-spacing: -0.02em; }
+.timeline-meta { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.timeline-action { margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: 12px; font-weight: 800; }
+.form-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.form-chip { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; color: #FFFFFF; font-weight: 900; box-shadow: var(--shadow-sm); }
+.form-chip.win { background: #12B76A; }
+.form-chip.draw { background: #F79009; }
+.form-chip.loss { background: #F04438; }
+.trend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; margin-top: 14px; }
+.trend-card { padding: 13px; border-radius: var(--radius-md); background: #FFFFFF; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.trend-card span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.trend-card strong { display: block; margin-top: 5px; color: var(--text); font-size: 18px; }
+.timeline-score { display: grid; place-items: center; min-width: 92px; padding: 12px 14px; border-radius: 18px; background: #FFFFFF; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.timeline-score strong { font-size: 26px; color: var(--text); line-height: 1; }
+.timeline-result { margin-top: 6px; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.timeline-result.win { background: #ECFDF3; color: #027A48; }
+.timeline-result.loss { background: #FEF3F2; color: #B42318; }
+.timeline-result.draw { background: #FFFAEB; color: #B54708; }
+.timeline-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.timeline-detail { padding: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.72); border: 1px solid rgba(228,231,236,0.9); }
+.timeline-detail span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.timeline-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; background: #FFFFFF; border: 1px solid var(--border); color: var(--text); font-size: 12px; font-weight: 700; }
+.timeline-motm { background: linear-gradient(135deg, #FFFBEB, #FFFFFF); border-color: rgba(245,158,11,0.28); }
+.timeline-detail-grid { max-height: 0; opacity: 0; overflow: hidden; transform: translateY(-4px); transition: max-height 0.28s ease, opacity 0.22s ease, transform 0.22s ease; }
+.timeline-card.expanded .timeline-detail-grid { max-height: 320px; opacity: 1; transform: translateY(0); }
+/* Comparison */
+#compareA, #compareB {
+  margin: 4px 4px 8px 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+
+#comparisonResult {
+  margin-top: 10px;
+  font-size: 13px;
+}
+.comparison-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+.comparison-card { border: 1px solid var(--border); border-radius: var(--radius-md); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); padding: 16px; box-shadow: var(--shadow-sm); }
+.comparison-card h3 { margin-bottom: 10px; font-size: 16px; color: var(--text); }
+.comparison-stat { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid #EAECF0; }
+.summary-hero { margin-top: 16px; padding: 20px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #101828 0%, #342A68 100%); color: #FFFFFF; box-shadow: 0 16px 40px rgba(16,24,40,0.18); }
+.summary-hero h3 { margin: 0 0 8px; font-size: 15px; font-weight: 700; color: #FFFFFF; }
+.summary-record { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 36px; font-weight: 800; letter-spacing: -0.04em; }
+.summary-record span { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.72); }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 14px; }
+.summary-card { position: relative; overflow: hidden; padding: 16px; border-radius: var(--radius-md); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.summary-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
+.summary-label { display: block; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.summary-value { display: block; margin-top: 6px; font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
+.summary-note { margin-top: 8px; color: var(--muted); font-size: 12px; }
+.progress-list { display: grid; gap: 12px; margin-top: 14px; }
+.progress-card { padding: 14px; border-radius: var(--radius-md); background: #FFFFFF; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.progress-track { width: 100%; background: #EAECF0; height: 12px; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: inherit; }
+.leaderboard-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin: 14px 0 4px; flex-wrap: wrap; }
+.leaderboard-toolbar label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.leaderboard-toolbar select { min-width: 210px; padding: 10px 36px 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: #FFFFFF; color: var(--text); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-sm); }
+.leaderboard-context { margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid rgba(124,92,252,0.16); background: #F8F7FF; color: var(--muted); font-size: 12px; font-weight: 600; }
+.leaderboard-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; margin-top: 12px; }
+.leaderboard-insight { padding: 12px; border-radius: var(--radius-md); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.leaderboard-insight span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.leaderboard-insight strong { display: block; margin-top: 4px; color: var(--text); font-size: 14px; line-height: 1.25; }
+.leaderboard-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 16px; }
+.leaderboard-panel { position: relative; overflow: hidden; padding: 18px; border-radius: var(--radius-lg); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border: 1px solid rgba(124,92,252,0.16); box-shadow: var(--shadow-md); }
+.leaderboard-panel::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
+.leaderboard-panel.assists-panel::before { background: linear-gradient(90deg, #12B76A, #6CE9A6); }
+.leaderboard-panel h3 { margin: 0 0 4px; font-size: 17px; color: var(--text); letter-spacing: -0.02em; }
+.leaderboard-panel-kicker { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; padding: 5px 9px; border-radius: 999px; background: #F8F7FF; color: var(--accent); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.leaderboard-panel-subtitle { margin-bottom: 12px; color: var(--muted); font-size: 12px; }
+.leaderboard-list { display: grid; gap: 12px; margin-top: 16px; }
+.leaderboard-card { position: relative; overflow: hidden; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(124,92,252,0.16); background: linear-gradient(135deg, #FFFFFF 0%, #F8F7FF 100%); box-shadow: 0 10px 28px rgba(16,24,40,0.08); }
+.leaderboard-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: linear-gradient(180deg, var(--accent), var(--accent-bright)); }
+.leaderboard-rank { width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; color: #FFFFFF; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 8px 18px rgba(124,92,252,0.28); }
+.leaderboard-player strong { display: block; font-size: 15px; letter-spacing: -0.01em; color: var(--text); }
+.leaderboard-player span { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+.leaderboard-goals { text-align: right; font-weight: 800; color: var(--accent); font-size: 22px; line-height: 1; }
+.leaderboard-goals span { display: block; margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.leaderboard-progress { grid-column: 2 / 4; height: 8px; border-radius: 999px; background: #EAECF0; overflow: hidden; }
+.leaderboard-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
+.leaderboard-card.rank-1 { border-color: rgba(245,158,11,0.38); background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 48%, #FFF7ED 100%); box-shadow: 0 18px 40px rgba(245,158,11,0.18); }
+.leaderboard-card.rank-2 { border-color: rgba(148,163,184,0.45); background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 50%, #EEF2F6 100%); box-shadow: 0 16px 34px rgba(100,116,139,0.14); }
+.leaderboard-card.rank-3 { border-color: rgba(180,83,9,0.34); background: linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 52%, #FEF3C7 100%); box-shadow: 0 14px 30px rgba(180,83,9,0.13); }
+.leaderboard-card.rank-1 .leaderboard-rank { background: linear-gradient(135deg, #F59E0B, #FDE68A); color: #78350F; box-shadow: 0 10px 22px rgba(245,158,11,0.34); }
+.leaderboard-card.rank-2 .leaderboard-rank { background: linear-gradient(135deg, #94A3B8, #E2E8F0); color: #334155; box-shadow: 0 10px 22px rgba(100,116,139,0.24); }
+.leaderboard-card.rank-3 .leaderboard-rank { background: linear-gradient(135deg, #B45309, #FDBA74); color: #431407; box-shadow: 0 10px 22px rgba(180,83,9,0.24); }
+.leaderboard-card.rank-1 .leaderboard-player span::before { content: "1st • "; }
+.leaderboard-card.rank-2 .leaderboard-player span::before { content: "2nd • "; }
+.leaderboard-card.rank-3 .leaderboard-player span::before { content: "3rd • "; }
+.leaderboard-card.neutral .leaderboard-rank { background: #EAECF0; color: var(--text); box-shadow: none; }
+.leaderboard-card.neutral .leaderboard-player span::before { content: ""; }
+
+button { padding: 10px 16px; border-radius: 10px; border: 1px solid transparent; background: var(--accent); color: #FFFFFF; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 4px; box-shadow: 0 1px 2px rgba(16,24,40,0.08); transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease; }
+
+button:hover { background: #6941C6; transform: translateY(-1px); box-shadow: 0 6px 14px rgba(105,65,198,0.22); }
+
+/* League Centre */
+.league-centre-grid { display: grid; gap: 22px; margin-top: 16px; }
+.league-panel { padding: 18px; border-radius: var(--radius-lg); background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFD 100%); border: 1px solid rgba(124,92,252,0.16); box-shadow: var(--shadow-md); }
+.league-table-scroll { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 12px; }
+.league-grid-table, .league-standings-table { width: 100%; border-collapse: collapse; min-width: 960px; }
+.league-grid-table th, .league-grid-table td, .league-standings-table th, .league-standings-table td { padding: 13px 14px; border-bottom: 1px solid #EAECF0; text-align: center; font-size: 12px; }
+.league-grid-table th, .league-standings-table th { background: #06254A; color: #FFFFFF; font-weight: 800; }
+.league-grid-table td:first-child, .league-standings-table td:nth-child(2) { text-align: left; font-weight: 800; }
+.league-self-cell { background: #06254A !important; color: #06254A; }
+.league-result-cell { font-weight: 900; color: var(--text); }
+.league-highlight-row td:not(.league-self-cell), .league-highlight-cell:not(.league-self-cell) { background: #F8F7FF; }
+.league-update-note { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.league-hero { padding: 20px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #101828 0%, #342A68 100%); color: #FFFFFF; box-shadow: 0 18px 42px rgba(16,24,40,0.18); } .league-hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 14px; } .league-hero-stat { padding: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.14); } .league-hero-stat span { display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.72); } .league-hero-stat strong { display:block; margin-top:4px; font-size:20px; color:#FFFFFF; } .league-key { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; } .league-key-pill, .league-cell-pill { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:5px 9px; font-size:11px; font-weight:800; white-space:nowrap; } .league-key-pill.self { background:#06254A; color:#FFFFFF; } .league-key-pill.result, .league-cell-pill.result { background:#ECFDF3; color:#027A48; border:1px solid rgba(18,183,106,0.24); } .league-key-pill.date, .league-cell-pill.date { background:#F8F7FF; color:var(--accent); border:1px solid rgba(124,92,252,0.18); } .league-key-pill.ours { background:#EEF4FF; color:#3538CD; border:1px solid rgba(53,56,205,0.18); } .league-grid-table th:first-child, .league-grid-table td:first-child { position: sticky; left: 0; z-index: 2; background:#FFFFFF; box-shadow: 8px 0 12px rgba(16,24,40,0.06); } .league-grid-table th:first-child { background:#06254A; color:#FFFFFF; z-index:3; } .league-our-team-pill { display:inline-flex; margin-left:8px; padding:3px 7px; border-radius:999px; background:#F8F7FF; color:var(--accent); font-size:10px; font-weight:800; text-transform:uppercase; } .league-compact-table .gd-positive { color:#027A48; font-weight:900; } .league-compact-table .gd-negative { color:#B42318; font-weight:900; } .league-compact-table .points-pill { display:inline-flex; min-width:34px; justify-content:center; border-radius:999px; padding:4px 8px; background:#F8F7FF; color:var(--accent); font-weight:900; } .league-details-toggle { margin-top:14px; } .league-detailed-panel { margin-top:14px; }
+/* Footer */
+footer {
+  border-top: 1px solid var(--border);
+  background: #f0f0f0;
+  margin-top: 20px;
+}
+
+.footer-inner { max-width: 1280px; margin: 0 auto; padding: 10px 24px 14px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+@media (max-width: 600px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tab-container { width: 100%; padding-bottom: 14px; scrollbar-width: thin; scroll-snap-type: x proximity; }
+  .tab-container::after { content: "Swipe for more tabs →"; flex: 0 0 auto; align-self: center; color: rgba(255,255,255,0.72); font-size: 12px; padding: 0 8px; }
+  .tab { scroll-snap-align: start; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .leaderboard-card { grid-template-columns: auto 1fr; align-items: start; }
+  .leaderboard-panels { grid-template-columns: 1fr; }
+  .leaderboard-goals { grid-column: 1 / 3; text-align: left; }
+  .leaderboard-progress { grid-column: 1 / 3; }
+  .timeline-detail-grid { grid-template-columns: 1fr; }
+  .timeline-score { width: 100%; justify-items: start; }
+  .fixture-card { grid-template-columns: 1fr; }
+  .fixture-kickoff { text-align: left; }
+  .footer-inner {
+    flex-direction: column;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-inner">
+   <div class="header-title" style="display:flex; align-items:center; gap:20px;">
+<img src="badge.jpeg" alt="Harleston U13 Hurricanes club badge" width="64" height="64" style="height:64px; width:64px; border-radius:18px; object-fit:cover; border:1px solid rgba(255,255,255,0.18); box-shadow:0 8px 20px rgba(0,0,0,0.22);">
+        <div style="display:flex; flex-direction:column; justify-content:center;">
+        <h1 style="font-size:26px; margin:0;">Harleston Hurricanes</h1>
+<span style="font-size:13px; color:#e0e0e0;">U13 season centre • 2026/27 fixtures, results and player development</span>
+  </div>
+</div>
+</div>
+
+
+      <div class="tab-container" role="tablist" aria-label="Dashboard sections">
+        <button id="homeTabButton" class="tab active" role="tab" aria-controls="homeTab" data-tab="homeTab" aria-selected="true" tabindex="0">Home</button>
+        <button id="squadTabButton" class="tab" role="tab" aria-controls="squadTab" data-tab="squadTab" aria-selected="false" tabindex="-1">Squad</button>
+        <button id="fixturesTabButton" class="tab" role="tab" aria-controls="fixturesTab" data-tab="fixturesTab" aria-selected="false" tabindex="-1">Fixtures</button>
+        <button id="leagueTabButton" class="tab" role="tab" aria-controls="leagueTab" data-tab="leagueTab" aria-selected="false" tabindex="-1">League Centre</button>
+        <button id="statsTabButton" class="tab" role="tab" aria-controls="statsTab" data-tab="statsTab" aria-selected="false" tabindex="-1">Player Contributions</button>
+        <button id="heatmapTabButton" class="tab" role="tab" aria-controls="heatmapTab" data-tab="heatmapTab" aria-selected="false" tabindex="-1">Appearance Heatmap</button>
+        <button id="leaderboardTabButton" class="tab" role="tab" aria-controls="leaderboardTab" data-tab="leaderboardTab" aria-selected="false" tabindex="-1">Player Leaderboard</button>
+        <button id="compareTabButton" class="tab" role="tab" aria-controls="compareTab" data-tab="compareTab" aria-selected="false" tabindex="-1">Compare Players</button>
+        <button id="summaryTabButton" class="tab" role="tab" aria-controls="summaryTab" data-tab="summaryTab" aria-selected="false" tabindex="-1">Season Summary</button>
+        <button id="timelineTabButton" class="tab" role="tab" aria-controls="timelineTab" data-tab="timelineTab" aria-selected="false" tabindex="-1">Match Timeline</button>
+        <button id="appearanceTabButton" class="tab" role="tab" aria-controls="appearanceTab" data-tab="appearanceTab" aria-selected="false" tabindex="-1">Appearances</button>
+      </div>
+
+  </div>
+  <main>
+    <div class="container">
+
+      <!-- HOME TAB -->
+      <div id="homeTab" class="section active" role="tabpanel" aria-labelledby="homeTabButton">
+        <div class="section-card">
+          <h2>Overview</h2>
+          <p class="section-subtitle">
+            Your at-a-glance view of the next fixture, latest result, season progress and current form.
+          </p>
+
+          <div id="matchdayHero" class="matchday-hero" aria-live="polite" aria-label="Matchday hero">Loading matchday spotlight…</div>
+          <div id="seasonSnapshot" class="snapshot-grid" aria-live="polite" aria-label="Season snapshot"></div>
+          <div id="teamLeaders" class="leaders-grid" aria-live="polite" aria-label="Team leaders"></div>
+          <div id="nextMatchBox" class="info-box" aria-live="polite" aria-label="Next match summary">Loading next match…</div>
+          <div id="lastMatchBox" class="info-box" aria-live="polite" aria-label="Last match summary">Loading last match…</div>
+          <div id="seasonProgress" class="info-box" aria-live="polite" aria-label="Season progress by match type">Loading season progress…</div>
+          <div id="formGraph" class="info-box" aria-live="polite" aria-label="Recent form results">Loading form graph…</div>
+        </div>
+      </div>
+
+      <!-- SQUAD TAB -->
+      <div id="squadTab" class="section" role="tabpanel" aria-labelledby="squadTabButton">
+        <div class="section-card">
+          <h2>Squad</h2>
+          <p class="section-subtitle">A premium squad wall grouped by position, with the current management team and squad structure.</p>
+
+          <div id="squadSummary" class="squad-summary" aria-live="polite" aria-label="Squad summary"></div>
+          <div class="staff-card" role="group" aria-label="Management team: Manager Steve Goddard, Assistant Manager Mark Elden"><span>Management team</span><strong>Steve Goddard</strong><p>Manager</p><strong>Mark Elden</strong><p>Assistant Manager</p></div>
+          <div id="squad" class="squad-groups" aria-live="polite" aria-label="Squad grouped by position"></div>
+        </div>
+      </div>
+
+      <!-- FIXTURES TAB -->
+      <div id="fixturesTab" class="section" role="tabpanel" aria-labelledby="fixturesTabButton">
+        <div class="section-card">
+          <h2>Fixtures</h2>
+          <p class="section-subtitle">Premium match cards for upcoming fixtures, including date, opponent, venue, match type and kick-off status.</p>
+          <div id="fixtures" aria-live="polite" aria-label="Upcoming fixtures list"></div>
+        </div>
+      </div>
+      <!-- LEAGUE CENTRE TAB -->
+      <div id="leagueTab" class="section" role="tabpanel" aria-labelledby="leagueTabButton"><div class="section-card"><h2>League Centre</h2><p class="section-subtitle">Full league fixture grid and current standings, updated from the weekly league screenshots.</p><div id="leagueCentre" aria-live="polite" aria-label="League fixtures grid and table"></div></div></div>
+
+      <!-- PLAYER CONTRIBUTIONS TAB -->
+      <div id="statsTab" class="section" role="tabpanel" aria-labelledby="statsTabButton">
+        <div class="section-card">
+          <h2>Player Contributions</h2>
+          <p class="section-subtitle">Premium contribution cards showing appearances, goals, assists, player-of-the-match awards and clean sheets for every player.</p>
+          <div id="playerStats" aria-live="polite" aria-label="Player contribution cards"></div>
+        </div>
+      </div>
+
+      <!-- HEATMAP TAB -->
+      <div id="heatmapTab" class="section" role="tabpanel" aria-labelledby="heatmapTabButton">
+        <div class="section-card">
+          <h2>Appearance Heatmap</h2>
+          <p class="section-subtitle">Compare match involvement across the squad at a glance. Darker cards indicate more appearances.</p>
+          <div class="heatmap-legend" aria-label="Appearance heatmap legend"><span>Fewer appearances</span><span class="heatmap-scale" aria-hidden="true"></span><span>More appearances</span><span>Each card also shows the exact appearance total.</span></div>
+          <div id="appearanceHeatmap" class="heatmap-wrapper" aria-live="polite" aria-label="Appearance totals by player"></div>
+        </div>
+      </div>
+
+      <!-- PLAYER LEADERBOARD TAB -->
+      <div id="leaderboardTab" class="section" role="tabpanel" aria-labelledby="leaderboardTabButton">
+        <div class="section-card">
+          <h2>Player Leaderboard</h2>
+          <p class="section-subtitle">Permanent goals and assists leaderboards, each with independent sorting and premium ranked cards.</p>
+          <div class="leaderboard-panels"><div class="leaderboard-panel goals-panel" role="region" aria-labelledby="goalsLeaderboardHeading"><span class="leaderboard-panel-kicker">Scoring impact</span><h3 id="goalsLeaderboardHeading">Goals leaderboard</h3><p class="leaderboard-panel-subtitle">Ranked by goals scored.</p><div class="leaderboard-toolbar"><label for="goalsLeaderboardSort">Sort goals</label><select id="goalsLeaderboardSort" aria-label="Sort goals leaderboard" onchange="renderPlayerLeaderboards()"><option value="desc">High to low</option><option value="asc">Low to high</option><option value="name-asc">Player name: A to Z</option><option value="name-desc">Player name: Z to A</option></select></div><div id="goalsLeaderboard" aria-live="polite" aria-label="Goals leaderboard results"></div></div><div class="leaderboard-panel assists-panel" role="region" aria-labelledby="assistsLeaderboardHeading"><span class="leaderboard-panel-kicker">Creative impact</span><h3 id="assistsLeaderboardHeading">Assists leaderboard</h3><p class="leaderboard-panel-subtitle">Ranked by assists recorded.</p><div class="leaderboard-toolbar"><label for="assistsLeaderboardSort">Sort assists</label><select id="assistsLeaderboardSort" aria-label="Sort assists leaderboard" onchange="renderPlayerLeaderboards()"><option value="desc">High to low</option><option value="asc">Low to high</option><option value="name-asc">Player name: A to Z</option><option value="name-desc">Player name: Z to A</option></select></div><div id="assistsLeaderboard" aria-live="polite" aria-label="Assists leaderboard results"></div></div></div>
+        </div>
+      </div>
+
+      <!-- PLAYER COMPARISON TAB -->
+      <div id="compareTab" class="section" role="tabpanel" aria-labelledby="compareTabButton">
+        <div class="section-card">
+          <h2>Player Comparison</h2>
+          <p class="section-subtitle">Select two different players to compare goals, assists, appearances, player-of-the-match awards and clean sheets.</p>
+          <select id="compareA" aria-label="First player to compare"></select>
+          <select id="compareB" aria-label="Second player to compare"></select>
+          <br>
+          <button onclick="renderComparison()" aria-label="Compare selected player statistics">Compare player stats</button>
+          <div id="comparisonResult" aria-live="polite" aria-atomic="true"></div>
+        </div>
+      </div>
+
+      <!-- SEASON SUMMARY TAB -->
+      <div id="summaryTab" class="section" role="tabpanel" aria-labelledby="summaryTabButton">
+        <div class="section-card">
+          <h2>Season Summary</h2>
+          <p class="section-subtitle">Review the team record, goals for and against, assists, and overall season progress.</p>
+          <div id="seasonSummary" aria-live="polite" aria-label="Season summary metrics"></div>
+
+
+        </div>
+      </div>
+
+      <!-- MATCH TIMELINE TAB -->
+      <div id="timelineTab" class="section" role="tabpanel" aria-labelledby="timelineTabButton">
+        <div class="section-card">
+          <h2>Match Timeline</h2>
+          <p class="section-subtitle">A premium match-by-match story of the season, with results, key contributors and player-of-the-match highlights.</p>
+          <div class="timeline-toolbar"><label for="timelineFilter">Filter by</label><select id="timelineFilter" aria-label="Filter match timeline" onchange="renderMatchTimeline()"><option value="all">All matches</option><option value="W">Wins</option><option value="D">Draws</option><option value="L">Losses</option><option value="Friendly">Friendlies</option><option value="League">League</option><option value="Cup">Cup</option></select></div>
+          <div id="matchTimeline" aria-live="polite" aria-label="Interactive match timeline"></div>
+        </div>
+      </div>
+
+      <!-- APPEARANCES TAB -->
+      <div id="appearanceTab" class="section" role="tabpanel" aria-labelledby="appearanceTabButton">
+        <div class="section-card">
+          <h2>Player Appearance Breakdown</h2>
+          <p class="section-subtitle">Friendlies, League and Cup appearances per player.</p>
+          <div class="leaderboard-toolbar"><label for="appearanceSort">Sort by</label><select id="appearanceSort" aria-label="Sort appearance breakdown" onchange="renderAppearanceBreakdown()"><option value="total-desc">Total: high to low</option><option value="total-asc">Total: low to high</option><option value="name-asc">Player name: A to Z</option><option value="name-desc">Player name: Z to A</option></select></div>
+
+          <div class="table-wrapper">
+            <div class="table-scroll">
+              <table id="appearanceMatrix" aria-label="Player appearance breakdown by match type">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Friendlies</th>
+                    <th>League</th>
+                    <th>Cup</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>Harleston U13 Hurricanes • Season 2026/27</span>
+<span><strong>Last updated:</strong> 7 September 2026 • Updated when fixtures, results and player statistics are recorded</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* DATA MODEL */
+const data = {
+  squad: [
+    { name: "Theo Goddard", position: "Goalkeeper" },
+    { name: "Beck Brennan", position: "Defender" },
+    { name: "Ben Tawn", position: "Defender" },
+    { name: "Oscar Broadley", position: "Defender" },
+    { name: "Jenson Bartrum", position: "Defender" },
+    { name: "Jack Renaut", position: "Defender/Midfielder" },
+    { name: "Arthur Bentley", position: "Midfielder" },
+    { name: "Joey Coles", position: "Midfielder" },
+    { name: "Dexter Elden", position: "Midfielder" },
+    { name: "Jesse Skelton", position: "Midfielder" },
+    { name: "Elias Young", position: "Striker" },
+    { name: "Jacob Saunders", position: "Striker" }
+  ],
+
+  fixtures: [
+    {
+      date: "2026-08-23",
+      homeAway: "Away",
+      opponent: "Long Stratton",
+      venue: "Great Moulton",
+      kickoff: "10:30am",
+      type: "Friendly"
+    },
+    {
+      date: "2026-08-30",
+      homeAway: "Home",
+      opponent: "Heigham Park Rangers",
+      venue: "Harleston Sancroft Academy",
+      kickoff: "10:30am",
+      type: "Friendly"
+    },
+    { date: "2026-09-06", homeAway: "Home", opponent: "Mulbarton Wanderers F.C. U13 Pumas", venue: "Harleston Sancroft Academy", kickoff: "10:00am", type: "League" },
+    { date: "2026-09-13", homeAway: "Home", opponent: "Morley Youth F.C. U13 Mustangs", venue: "Harleston Sancroft Academy (Secondary) #3", kickoff: "10:00am", type: "League" },
+    { date: "2026-09-20", homeAway: "Away", opponent: "Holt United F.C. U13", venue: "Holt Playing Fields #4", kickoff: "10:00am", type: "League" },
+    { date: "2026-09-27", homeAway: "Away", opponent: "Cringleford F.C. U13 Lightning", venue: "Eaton Park #1", kickoff: "11:00am", type: "League" },
+    { date: "2026-10-11", homeAway: "Home", opponent: "Heigham Park Rangers F.C. U13 Heroes", venue: "Harleston Sancroft Academy (Secondary) #2", kickoff: "TBC", type: "League" },
+    { date: "2026-10-18", homeAway: "Away", opponent: "Stoke United F.C. U13 Blues", venue: "Framingham Earl Sports Centre #3", kickoff: "11:30am", type: "League" },
+    { date: "2026-10-25", homeAway: "Away", opponent: "Sprowston F.C. U13 Hawks", venue: "Sprowston Community Academy #7", kickoff: "10:00am", type: "League" },
+    { date: "2026-11-01", homeAway: "Away", opponent: "Old Catton Juniors F.C. U13 Cobras", venue: "Lavare Park #12", kickoff: "TBC", type: "Cup" },
+    { date: "2026-11-08", homeAway: "Home", opponent: "Cringleford F.C. U13 Lightning", venue: "Harleston Sancroft Academy (Secondary) #3", kickoff: "TBC", type: "League" },
+    { date: "2026-11-15", homeAway: "Home", opponent: "Aylsham F.C. (Ltd) U13 Rhinos", venue: "Harleston Sancroft Academy (Secondary) #1", kickoff: "TBC", type: "League" },
+    { date: "2026-12-06", homeAway: "Away", opponent: "North Walsham Town F.C. U13 Angels", venue: "Greens Road #3", kickoff: "TBC", type: "League" },
+    { date: "2026-12-13", homeAway: "Away", opponent: "Morley Youth F.C. U13 Mustangs", venue: "Shropham Playing Field #2", kickoff: "TBC", type: "League" },
+    { date: "2026-12-20", homeAway: "Home", opponent: "Sprowston F.C. U13 Hawks", venue: "Harleston Sancroft Academy (Secondary) #1", kickoff: "TBC", type: "League" },
+    { date: "2027-01-10", homeAway: "Home", opponent: "Holt United F.C. U13", venue: "Harleston Sancroft Academy (Secondary) #1", kickoff: "TBC", type: "League" },
+    { date: "2027-01-17", homeAway: "Away", opponent: "Heigham Park Rangers F.C. U13 Heroes", venue: "Recreation Road Sports Centre #8", kickoff: "TBC", type: "League" },
+    { date: "2027-01-24", homeAway: "Away", opponent: "Clenchwarton F.C. U13 Orange", venue: "Clenchwarton Recreation Ground", kickoff: "TBC", type: "League" },
+    { date: "2027-01-31", homeAway: "Away", opponent: "Aylsham F.C. (Ltd) U13 Rhinos", venue: "Youngs Park #9", kickoff: "10:00am", type: "League" },
+    { date: "2027-02-07", homeAway: "Away", opponent: "Mulbarton Wanderers F.C. U13 Pumas", venue: "Orchard Park #4", kickoff: "11:15am", type: "League" },
+    { date: "2027-02-14", homeAway: "Home", opponent: "Stoke United F.C. U13 Blues", venue: "Harleston Sancroft Academy (Secondary) #4", kickoff: "TBC", type: "League" },
+    { date: "2027-02-21", homeAway: "Home", opponent: "North Walsham Town F.C. U13 Angels", venue: "Harleston Sancroft Academy (Secondary) #2", kickoff: "TBC", type: "League" },
+    { date: "2027-02-28", homeAway: "Home", opponent: "Clenchwarton F.C. U13 Orange", venue: "Harleston Sancroft Academy (Secondary) #4", kickoff: "TBC", type: "League" }
+  ],
+  league: { teams: ["Aylsham F.C. (Ltd) U13 Rhinos", "Clenchwarton F.C. U13 Orange", "Cringleford F.C. U13 Lightning", "Harleston Youth F.C. U13 Hurricanes", "Heigham Park Rangers F.C. U13 Heroes", "Holt United F.C. U13", "Morley Youth F.C. U13 Mustangs", "Mulbarton Wanderers F.C. U13 Pumas", "North Walsham Town F.C. U13 Angels", "Sprowston F.C. U13 Hawks", "Stoke United F.C. U13 Blues"],
+  grid: [["", "4-1", "20/09", "31/01", "25/10", "21/02", "22/11", "06/12", "11/10", "10/01", "27/09"], ["18/10", "", "04/10", "24/01", "20/09", "15/11", "21/02", "22/11", "17/01", "06/12", "13/12"], ["17/01", "20/12", "", "27/09", "10/01", "22/11", "24/01", "13/09", "25/10", "13/12", "11/10"], ["15/11", "28/02", "08/11", "", "11/10", "10/01", "13/09", "8-2", "21/02", "20/12", "14/02"], ["13/09", "31/01", "07/02", "17/01", "", "08/11", "14/02", "20/12", "22/11", "21/02", "06/12"], ["20/12", "07/02", "14/02", "20/09", "28/02", "", "11/10", "13/12", "04/10", "13/09", "17/01"], ["07/02", "10/01", "18/10", "13/12", "15/11", "06/12", "", "07/03", "31/01", "08/11", "20/12"], ["28/02", "25/10", "15/11", "07/02", "24/01", "31/01", "04/10", "", "14/02", "17/01", "20/09"], ["13/12", "27/09", "28/02", "06/12", "18/10", "24/01", "2-3", "08/11", "", "20/09", "13/09"], ["04/10", "14/02", "2-6", "25/10", "27/09", "18/10", "28/02", "11/10", "15/11", "", "22/11"], ["24/01", "08/11", "21/02", "18/10", "04/10", "2-0", "25/10", "10/01", "07/02", "31/01", ""]],
+  table: [{ pos: 1, team: "Harleston Youth F.C. U13 Hurricanes", home: { p: 1, w: 1, d: 0, l: 0, f: 8, a: 2 }, away: { w: 0, d: 0, l: 0, f: "-", a: "-" }, overall: { w: 1, d: 0, l: 0, f: 8, a: 2, gd: "+6", pts: 3 } }, { pos: 2, team: "Cringleford F.C. U13 Lightning", home: { p: 1, w: 0, d: 0, l: 0, f: "-", a: "-" }, away: { w: 1, d: 0, l: 0, f: 6, a: 2 }, overall: { w: 1, d: 0, l: 0, f: 6, a: 2, gd: "+4", pts: 3 } }, { pos: 3, team: "Aylsham F.C. (Ltd) U13 Rhinos", home: { p: 1, w: 1, d: 0, l: 0, f: 4, a: 1 }, away: { w: 0, d: 0, l: 0, f: "-", a: "-" }, overall: { w: 1, d: 0, l: 0, f: 4, a: 1, gd: "+3", pts: 3 } }, { pos: 4, team: "Stoke United F.C. U13 Blues", home: { p: 1, w: 1, d: 0, l: 0, f: 2, a: 0 }, away: { w: 0, d: 0, l: 0, f: "-", a: "-" }, overall: { w: 1, d: 0, l: 0, f: 2, a: 0, gd: "+2", pts: 3 } }, { pos: 5, team: "Morley Youth F.C. U13 Mustangs", home: { p: 1, w: 0, d: 0, l: 0, f: "-", a: "-" }, away: { w: 1, d: 0, l: 0, f: 3, a: 2 }, overall: { w: 1, d: 0, l: 0, f: 3, a: 2, gd: "+1", pts: 3 } }, { pos: 6, team: "Heigham Park Rangers F.C. U13 Heroes", home: { p: 0, w: 0, d: 0, l: 0, f: "-", a: "-" }, away: { w: 0, d: 0, l: 0, f: "-", a: "-" }, overall: { w: 0, d: 0, l: 0, f: "-", a: "-", gd: "-", pts: 0 } }, { pos: 7, team: "North Walsham Town F.C. U13 Angels", home: { p: 1, w: 0, d: 0, l: 1, f: 2, a: 3 }, away: { w: 0, d: 0, l: 0, f: "-", a: "-" }, overall: { w: 0, d: 0, l: 1, f: 2, a: 3, gd: "-1", pts: 0 } }, { pos: 8, team: "Holt United F.C. U13", home: { p: 1, w: 0, d: 0, l: 0, f: "-", a: "-" }, away: { w: 0, d: 0, l: 1, f: 0, a: 2 }, overall: { w: 0, d: 0, l: 1, f: 0, a: 2, gd: "-2", pts: 0 } }, { pos: 9, team: "Clenchwarton F.C. U13 Orange", home: { p: 1, w: 0, d: 0, l: 0, f: "-", a: "-" }, away: { w: 0, d: 0, l: 1, f: 1, a: 4 }, overall: { w: 0, d: 0, l: 1, f: 1, a: 4, gd: "-3", pts: 0 } }, { pos: 10, team: "Sprowston F.C. U13 Hawks", home: { p: 1, w: 0, d: 0, l: 1, f: 2, a: 6 }, away: { w: 0, d: 0, l: 0, f: "-", a: "-" }, overall: { w: 0, d: 0, l: 1, f: 2, a: 6, gd: "-4", pts: 0 } }, { pos: 11, team: "Mulbarton Wanderers F.C. U13 Pumas", home: { p: 1, w: 0, d: 0, l: 0, f: "-", a: "-" }, away: { w: 0, d: 0, l: 1, f: 2, a: 8 }, overall: { w: 0, d: 0, l: 1, f: 2, a: 8, gd: "-6", pts: 0 } }], updated: "Latest league table screenshot" },
+
+matches: [
+  {
+    date: "2026-08-23",
+    homeAway: "Away",
+    opponent: "Long Stratton",
+    type: "Friendly",
+    startingXI: [
+      "Theo Goddard",
+      "Ben Tawn",
+      "Oscar Broadley",
+      "Jenson Bartrum",
+      "Joey Coles",
+      "Dexter Elden",
+      "Jesse Skelton",
+      "Elias Young",
+      "Jacob Saunders"
+    ],
+    subs: [
+      "Jack Renaut",
+      "Arthur Bentley"
+    ],
+    events: {
+      goals: [],
+      assists: [],
+      motm: "Arthur Bentley",
+      cleanSheet: null
+    },
+    result: "L",
+    score: {
+      for: 0,
+      against: 6
+    }
+  },
+
+  {
+    date: "2026-08-30",
+    homeAway: "Home",
+    opponent: "Heigham Park Rangers",
+    type: "Friendly",
+    startingXI: [
+      "Theo Goddard",
+      "Beck Brennan",
+      "Ben Tawn",
+      "Oscar Broadley",
+      "Arthur Bentley",
+      "Dexter Elden",
+      "Jesse Skelton",
+      "Elias Young",
+      "Jacob Saunders"
+    ],
+    subs: [
+      "Jack Renaut",
+      "Joey Coles"
+    ],
+    events: {
+      goals: [
+        { player: "Elias Young", count: 2 },
+        { player: "Joey Coles", count: 1 }
+      ],
+      assists: [
+        { player: "Jesse Skelton" },
+        { player: "Jacob Saunders" }
+      ],
+      motm: "Beck Brennan",
+      cleanSheet: null
+    },
+    result: "L",
+    score: {
+      for: 3,
+      against: 4
+    }
+  },
+  {
+    date: "2026-09-06",
+    homeAway: "Home",
+    opponent: "Mulbarton Wanderers F.C. U13 Pumas",
+    type: "League",
+    startingXI: ["Theo Goddard", "Beck Brennan", "Ben Tawn", "Oscar Broadley", "Joey Coles", "Dexter Elden", "Jesse Skelton", "Elias Young", "Jacob Saunders"],
+    subs: ["Jack Renaut", "Jenson Bartrum"],
+    events: { goals: [{ player: "Elias Young", count: 1 }, { player: "Jacob Saunders", count: 3 }, { player: "Joey Coles", count: 2 }, { player: "Dexter Elden", count: 2 }], assists: [{ player: "Dexter Elden" }, { player: "Jacob Saunders" }, { player: "Jesse Skelton" }], motm: "Jacob Saunders", cleanSheet: null },
+    result: "W",
+    score: { for: 8, against: 2 }
+  }
+  ],
+};
+
+/* DATE FORMATTER */
+function formatDateFull(dateStr) {
+  const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const months = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
+  const d = new Date(`${dateStr}T00:00:00`);
+  return `${weekdays[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/* TABS */
+function setupTabs() {
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.section');
+
+  sections.forEach(s => { s.hidden = !s.classList.contains('active'); });
+  tabs.forEach(tab => tab.setAttribute('tabindex', tab.classList.contains('active') ? '0' : '-1'));
+  tabs.forEach(tab => {
+    tab.addEventListener('keydown', event => { const index = Array.from(tabs).indexOf(tab); const nextIndex = event.key === 'ArrowRight' ? (index + 1) % tabs.length : event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length : -1; if (nextIndex >= 0) { event.preventDefault(); tabs[nextIndex].focus(); tabs[nextIndex].click(); } });
+    tab.addEventListener('click', () => {
+      const targetId = tab.getAttribute('data-tab');
+      tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); t.setAttribute('tabindex', '-1'); });
+      sections.forEach(s => { s.classList.remove('active'); s.hidden = true; });
+      tab.classList.add('active'); tab.setAttribute('aria-selected', 'true'); tab.setAttribute('tabindex', '0');
+      const targetSection = document.getElementById(targetId); if (targetSection) { targetSection.classList.add('active'); targetSection.hidden = false; }
+    });
+  });
+}
+
+/* SQUAD */
+function renderSquad() {
+  const squadEl = document.getElementById("squad");
+  const summaryEl = document.getElementById("squadSummary");
+  squadEl.innerHTML = "";
+  summaryEl.innerHTML = "";
+  const groups = { Goalkeepers: [], Defenders: [], Midfielders: [], Forwards: [], "Multi-position players": [] };
+  data.squad.forEach(player => { if (player.position === "Goalkeeper") groups.Goalkeepers.push(player); else if (player.position === "Defender") groups.Defenders.push(player); else if (player.position === "Midfielder") groups.Midfielders.push(player); else if (player.position === "Striker") groups.Forwards.push(player); else groups["Multi-position players"].push(player); });
+  summaryEl.innerHTML = `<div class="squad-summary-card" role="group" aria-label="Total squad players: ${data.squad.length}"><span>Squad size</span><strong>${data.squad.length}</strong></div><div class="squad-summary-card" role="group" aria-label="Goalkeepers: ${groups.Goalkeepers.length}"><span>Goalkeepers</span><strong>${groups.Goalkeepers.length}</strong></div><div class="squad-summary-card" role="group" aria-label="Defenders: ${groups.Defenders.length}"><span>Defenders</span><strong>${groups.Defenders.length}</strong></div><div class="squad-summary-card" role="group" aria-label="Midfielders and forwards: ${groups.Midfielders.length + groups.Forwards.length}"><span>Midfield/attack</span><strong>${groups.Midfielders.length + groups.Forwards.length}</strong></div>`;
+  Object.entries(groups).forEach(([groupName, players]) => { if (!players.length) return; const section = document.createElement("div"); section.className = "position-group"; section.setAttribute("role", "region"); section.setAttribute("aria-label", `${groupName}: ${players.length} player${players.length === 1 ? "" : "s"}`); section.innerHTML = `<h3>${groupName}</h3><div class="squad-card-grid">${players.map(player => `<div class="squad-card" role="group" aria-label="${player.name}, ${player.position}"><strong>${player.name}</strong><span class="position-pill">${player.position}</span></div>`).join("")}</div>`; squadEl.appendChild(section); });
+}
+
+/* FIXTURES */
+function renderFixtures() {
+  const fixturesEl = document.getElementById("fixtures");
+  fixturesEl.innerHTML = "<div class='fixtures-grid'></div>";
+  const fixtureGrid = fixturesEl.querySelector(".fixtures-grid");
+
+  data.fixtures.filter(match => new Date(`${match.date}T00:00:00`) >= new Date(new Date().setHours(0, 0, 0, 0)) && !data.matches.some(result => result.date === match.date && result.opponent === match.opponent)).forEach(match => {
+    const matchDiv = document.createElement("div");
+    matchDiv.className = "fixture-card";
+    matchDiv.setAttribute("aria-label", `${formatDateFull(match.date)}, ${match.homeAway} vs ${match.opponent}, ${match.type}, kick-off ${match.kickoff === "TBC" ? "time to be confirmed" : match.kickoff}, venue ${match.venue}`);
+    const matchDate = new Date(`${match.date}T00:00:00`);
+    const month = matchDate.toLocaleString("en-GB", { month: "short" });
+    const day = matchDate.getDate();
+    matchDiv.innerHTML = `
+      <div class="fixture-date-badge" aria-hidden="true"><span>${month}</span><strong>${day}</strong></div>
+      <div><div class="fixture-opponent">${match.homeAway} vs ${match.opponent}</div><div class="fixture-meta">${formatDateFull(match.date)} • ${match.venue}</div><div class="pill-row"><span class="football-pill ${match.homeAway.toLowerCase()}">${match.homeAway}</span><span class="football-pill">${match.type}</span>${match.kickoff === "TBC" ? `<span class="football-pill tbc">Time TBC</span>` : ""}</div></div>
+      <div class="fixture-kickoff">${match.kickoff === "TBC" ? "Time to be confirmed" : match.kickoff}<span>Kick-off</span></div>
+    `;
+    fixtureGrid.appendChild(matchDiv);
+  });
+  if (!fixtureGrid.children.length) fixturesEl.innerHTML = "<p>No upcoming fixtures yet. Fixtures will appear here once they are added to the season schedule.</p>";
+}
+function renderLeagueCentre() { const container = document.getElementById("leagueCentre"); if (!container || !data.league) return; const teams = data.league.teams; const shortName = team => team.replace("Harleston Youth F.C. U13 Hurricanes", "Harleston").replace("Cringleford F.C. U13 Lightning", "Cringleford").replace("Aylsham F.C. (Ltd) U13 Rhinos", "Aylsham").replace("Stoke United F.C. U13 Blues", "Stoke").replace("Morley Youth F.C. U13 Mustangs", "Morley").replace("Heigham Park Rangers F.C. U13 Heroes", "Heigham Park").replace("North Walsham Town F.C. U13 Angels", "North Walsham").replace("Holt United F.C. U13", "Holt").replace("Clenchwarton F.C. U13 Orange", "Clenchwarton").replace("Sprowston F.C. U13 Hawks", "Sprowston").replace("Mulbarton Wanderers F.C. U13 Pumas", "Mulbarton"); const highlight = "Harleston Youth F.C. U13 Hurricanes"; const ours = data.league.table.find(row => row.team === highlight); const header = teams.map(team => `<th aria-label="${team}" title="${team}">${shortName(team)}</th>`).join(""); const gridRows = teams.map((team, rowIndex) => { const cells = teams.map((opponent, colIndex) => { const value = data.league.grid[rowIndex][colIndex]; const isSelf = rowIndex === colIndex; const isResult = /\d+\s*-\s*\d+/.test(value); const isDate = value && !isResult && !isSelf; const classes = `${isSelf ? "league-self-cell" : ""} ${isResult ? "league-result-cell" : ""} ${opponent === highlight && !isSelf ? "league-highlight-cell" : ""}`.trim(); const cellContent = isSelf ? "" : isResult ? `<span class="league-cell-pill result">${value}</span>` : isDate ? `<span class="league-cell-pill date">${value}</span>` : value; const label = isSelf ? `${team} self cell` : `${team} vs ${opponent}: ${value || "Not scheduled"}`; return `<td class="${classes}" aria-label="${label}">${cellContent}</td>`; }).join(""); return `<tr class="${team === highlight ? "league-highlight-row" : ""}"><td title="${team}">${shortName(team)}${team === highlight ? `<span class="league-our-team-pill">Our team</span>` : ""}</td>${cells}</tr>`; }).join(""); const compactRows = data.league.table.map(row => { const gdClass = String(row.overall.gd).startsWith("+") ? "gd-positive" : String(row.overall.gd).startsWith("-") ? "gd-negative" : ""; return `<tr class="${row.team === highlight ? "league-highlight-row" : ""}" aria-label="${row.team}, position ${row.pos}, ${row.overall.pts} points"><td>${row.pos}</td><td>${shortName(row.team)}${row.team === highlight ? `<span class="league-our-team-pill">Our team</span>` : ""}</td><td>${row.home.p}</td><td>${row.overall.w}</td><td>${row.overall.d}</td><td>${row.overall.l}</td><td>${row.overall.f}</td><td>${row.overall.a}</td><td class="${gdClass}">${row.overall.gd}</td><td><span class="points-pill">${row.overall.pts}</span></td></tr>`; }).join(""); const detailedRows = data.league.table.map(row => `<tr class="${row.team === highlight ? "league-highlight-row" : ""}"><td>${row.pos}</td><td>${shortName(row.team)}</td><td>${row.home.p}</td><td>${row.home.w}</td><td>${row.home.d}</td><td>${row.home.l}</td><td>${row.home.f}</td><td>${row.home.a}</td><td>${row.away.w}</td><td>${row.away.d}</td><td>${row.away.l}</td><td>${row.away.f}</td><td>${row.away.a}</td><td>${row.overall.w}</td><td>${row.overall.d}</td><td>${row.overall.l}</td><td>${row.overall.f}</td><td>${row.overall.a}</td><td>${row.overall.gd}</td><td><strong>${row.overall.pts}</strong></td></tr>`).join(""); container.innerHTML = `<div class="league-centre-grid"><div class="league-hero" role="group" aria-label="Harleston league position summary"><h3>Harleston league position</h3><div class="matchday-fixture">${ours.pos}${ours.pos === 1 ? "st" : "th"} • ${ours.overall.pts} pts • GD ${ours.overall.gd}</div><div class="league-hero-grid"><div class="league-hero-stat"><span>Played</span><strong>${ours.home.p}</strong></div><div class="league-hero-stat"><span>Won</span><strong>${ours.overall.w}</strong></div><div class="league-hero-stat"><span>Goals for</span><strong>${ours.overall.f}</strong></div><div class="league-hero-stat"><span>Goals against</span><strong>${ours.overall.a}</strong></div></div></div><div class="league-panel" role="region" aria-label="Compact league table"><h3>Compact league table</h3><p class="section-subtitle">Fast standings view for position, record, goals and points.</p><div class="league-table-scroll"><table class="league-standings-table league-compact-table" aria-label="Compact league standings"><thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>F</th><th>A</th><th>GD</th><th>PTS</th></tr></thead><tbody>${compactRows}</tbody></table></div></div><div class="league-panel" role="region" aria-label="League fixtures grid"><h3>League fixtures grid</h3><p class="section-subtitle">Short team labels keep the grid scannable. Full team names remain available to screen readers and on hover.</p><div class="league-key" aria-label="League grid legend"><span class="league-key-pill self">Dark blue = same team</span><span class="league-key-pill result">Score = played</span><span class="league-key-pill date">Date = upcoming</span><span class="league-key-pill ours">Purple = Harleston focus</span></div><div class="league-table-scroll"><table class="league-grid-table" aria-label="League fixtures and results matrix"><thead><tr><th>Home team</th>${header}</tr></thead><tbody>${gridRows}</tbody></table></div><p class="league-update-note">League data updated from latest screenshot • 8 September 2026</p></div><details class="league-detailed-panel league-panel"><summary class="league-details-toggle">View detailed home/away standings</summary><div class="league-table-scroll"><table class="league-standings-table" aria-label="Detailed home away and overall standings"><thead><tr><th rowspan="2">Pos</th><th rowspan="2">Team</th><th colspan="6">Home</th><th colspan="5">Away</th><th colspan="7">Overall</th></tr><tr><th>P</th><th>W</th><th>D</th><th>L</th><th>F</th><th>A</th><th>W</th><th>D</th><th>L</th><th>F</th><th>A</th><th>W</th><th>D</th><th>L</th><th>F</th><th>A</th><th>GD</th><th>PTS</th></tr></thead><tbody>${detailedRows}</tbody></table></div></details></div>`; }
+
+/* NEXT MATCH */
+function getNextMatch() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  return data.fixtures
+    .map(f => ({ ...f, dateObj: new Date(`${f.date}T00:00:00`) }))
+    .filter(f => f.dateObj >= today && !data.matches.some(m => m.date === f.date && m.opponent === f.opponent))
+    .sort((a, b) => a.dateObj - b.dateObj)[0] || null;
+}
+
+function renderNextMatch() {
+  const box = document.getElementById("nextMatchBox");
+  const next = getNextMatch();
+  if (!next) {
+    box.innerHTML = "<strong>No upcoming matches yet.</strong><p>Fixtures will appear here once they are added to the season schedule.</p>";
+    return;
+  }
+
+  const kickoffMatch = next.kickoff.match(/^(\d{1,2}):(\d{2})(am|pm)$/i); const matchDate = new Date(`${next.date}T00:00:00`); if (kickoffMatch) { let hours = Number(kickoffMatch[1]) % 12; if (kickoffMatch[3].toLowerCase() === "pm") hours += 12; matchDate.setHours(hours, Number(kickoffMatch[2]), 0, 0); }
+  if (!kickoffMatch) { box.innerHTML = `<h3>Next Match</h3><p><strong>${formatDateFull(next.date)}</strong></p><p>${next.homeAway} vs ${next.opponent} — <strong>${next.type}</strong></p><p><small>${next.venue}</small></p><p><strong>Kick-off:</strong> Time to be confirmed.</p>`; return; }
+  const remainingMs = Math.max(0, matchDate - new Date()); const diffDays = Math.floor(remainingMs / (1000 * 60 * 60 * 24)); const diffHours = Math.floor((remainingMs / (1000 * 60 * 60)) % 24); const diffMinutes = Math.floor((remainingMs / (1000 * 60)) % 60);
+
+  box.innerHTML = `
+    <h3>Next Match</h3>
+    <p><strong>${formatDateFull(next.date)}</strong></p>
+    <p>${next.homeAway} vs ${next.opponent} — <strong>${next.type}</strong></p>
+    <p><small>${next.venue}</small></p>
+    <p><strong>Kick-off:</strong> ${next.kickoff}</p>
+    <p><strong>Countdown:</strong><br>
+    ${Math.max(0, diffDays)} days, ${Math.max(0, diffHours)} hours, ${Math.max(0, diffMinutes)} minutes</p>
+  `;
+}
+function renderMatchdayHero() { const box = document.getElementById("matchdayHero"); const next = getNextMatch(); const last = getLastMatch(); if (!next) { box.innerHTML = "<h3>Matchday spotlight</h3><div class='matchday-fixture'>No upcoming fixture</div><p>New fixtures will appear here once added to the schedule.</p>"; return; } const kickoff = next.kickoff === "TBC" ? "Time to be confirmed" : next.kickoff; const lastResult = last ? `${last.result === "W" ? "Win" : last.result === "D" ? "Draw" : "Loss"} ${last.score.for}-${last.score.against}` : "No result yet"; box.innerHTML = `<h3>Matchday spotlight</h3><div class="matchday-fixture">${next.homeAway} vs ${next.opponent}</div><div class="pill-row"><span class="football-pill ${next.homeAway.toLowerCase()}">${next.homeAway}</span><span class="football-pill">${next.type}</span>${next.kickoff === "TBC" ? `<span class="football-pill tbc">Time TBC</span>` : ""}</div><p>${formatDateFull(next.date)} • ${kickoff}</p><p>${next.venue}</p><p><strong>Last result:</strong> ${lastResult}</p>`; }
+
+/* LAST MATCH */
+function getLastMatch() {
+  const today = new Date();
+  return data.matches
+    .map(m => ({ ...m, dateObj: new Date(`${m.date}T00:00:00`) }))
+    .filter(m => m.dateObj <= today)
+    .sort((a, b) => b.dateObj - a.dateObj)[0] || null;
+}
+
+function renderLastMatch() {
+  const box = document.getElementById("lastMatchBox");
+  const last = getLastMatch();
+  if (!last) {
+    box.innerHTML = "<strong>No matches played yet.</strong><p>Results, scorers and player-of-the-match details will appear here once the first match is recorded.</p>";
+    return;
+  }
+
+  const resultIcon =
+    last.result === "W" ? "Win" :
+    last.result === "D" ? "Draw" :
+    "Loss";
+
+  const goals = last.events.goals
+    .map(g => `${g.player} (${g.count})`)
+    .join(", ");
+
+  const assists = last.events.assists
+    .map(a => `${a.player}`)
+    .join(", ");
+
+  box.innerHTML = `
+    <h3>Last Match</h3>
+    <p><strong>${formatDateFull(last.date)}</strong></p>
+    <p>${last.homeAway} vs ${last.opponent} — <strong>${last.type}</strong></p>
+    <p><strong>Result:</strong> ${resultIcon} (${last.score.for}-${last.score.against})</p>
+    <p><strong>Player of the Match:</strong> ${last.events.motm}</p>
+    <p><strong>Goals:</strong> ${goals || "None"}</p>
+    <p><strong>Assists:</strong> ${assists || "None"}</p>
+  `;
+}
+
+/* SEASON PROGRESS */
+function renderSeasonProgress() {
+  const bar = document.getElementById("seasonProgress");
+  const matchTypes = ["Friendly", "League", "Cup"];
+  const progressByType = matchTypes.map(type => { const total = data.fixtures.filter(f => f.type === type).length; const played = data.matches.filter(m => m.type === type).length; const pct = total === 0 ? 0 : Math.min(100, Math.round((played / total) * 100)); return { type, total, played, pct }; });
+  const colors = { Friendly: "#2563EB", League: "#7C3AED", Cup: "#D97706" };
+  const visibleProgress = progressByType.filter(item => item.total > 0 || item.played > 0);
+
+  bar.innerHTML = `<h3>Season Progress</h3><div class="progress-list">${visibleProgress.map(item => `<div class="progress-card" role="group" aria-label="${item.type}: ${item.played} of ${item.total} played, ${item.pct} percent complete"><div style="display:flex; justify-content:space-between; gap:12px; align-items:center;"><strong style="color:${colors[item.type]};">${item.type}</strong><span>${item.played}/${item.total} played</span></div><div class="progress-track"><div class="progress-fill" style="width:${item.pct}%; background:${colors[item.type]};"></div></div></div>`).join("")}</div>`;
+}
+
+/* FORM & TRENDS */
+function renderFormGraph() {
+  const box = document.getElementById("formGraph");
+  if (data.matches.length === 0) { box.innerHTML = "<strong>No form data yet.</strong><p>Recent results and trend insights will appear once matches are recorded.</p>"; return; }
+  const recent = [...data.matches].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+  const formChips = recent.map(match => { const label = match.result === "W" ? "Win" : match.result === "D" ? "Draw" : "Loss"; const cls = match.result === "W" ? "win" : match.result === "D" ? "draw" : "loss"; return `<span class="form-chip ${cls}" aria-label="${label}">${match.result}</span>`; }).join("");
+  const formText = recent.map(match => match.result === "W" ? "Win" : match.result === "D" ? "Draw" : "Loss").join(", ");
+  const goalsForLastThree = recent.reduce((sum, match) => sum + match.score.for, 0);
+  const goalsAgainstLastThree = recent.reduce((sum, match) => sum + match.score.against, 0);
+  const latest = recent[0];
+  let streakCount = 0; for (const match of recent) { if (match.result === latest.result) streakCount++; else break; }
+  const latestLabel = latest.result === "W" ? "Win" : latest.result === "D" ? "Draw" : "Loss";
+  const streakLabel = `${streakCount} ${latestLabel.toLowerCase()}${streakCount === 1 ? "" : "s"} in a row`;
+  box.innerHTML = `<h3>Form & Trends</h3><p aria-label="Recent form: ${formText}">Last ${recent.length} matches</p><div class="form-chip-row" aria-hidden="true">${formChips}</div><div class="trend-grid"><div class="trend-card" role="group" aria-label="Latest result: ${latestLabel} ${latest.score.for}-${latest.score.against}"><span>Latest result</span><strong>${latestLabel} ${latest.score.for}-${latest.score.against}</strong></div><div class="trend-card" role="group" aria-label="Current streak: ${streakLabel}"><span>Current streak</span><strong>${streakLabel}</strong></div><div class="trend-card" role="group" aria-label="Goals scored in last ${recent.length}: ${goalsForLastThree}"><span>Goals for</span><strong>${goalsForLastThree}</strong></div><div class="trend-card" role="group" aria-label="Goals conceded in last ${recent.length}: ${goalsAgainstLastThree}"><span>Goals against</span><strong>${goalsAgainstLastThree}</strong></div></div>`;
+}
+
+/* PLAYER CONTRIBUTIONS */
+function calculatePlayerStats() {
+  const stats = {};
+  data.squad.forEach(p => {
+    stats[p.name] = { goals: 0, assists: 0, motm: 0, cleanSheets: 0 };
+  });
+
+  data.matches.forEach(match => {
+    match.events.goals.forEach(g => { if (stats[g.player]) stats[g.player].goals += g.count; });
+    match.events.assists.forEach(a => { if (stats[a.player]) stats[a.player].assists += 1; });
+    if (match.events.motm && stats[match.events.motm]) stats[match.events.motm].motm += 1;
+    if (match.events.cleanSheet && stats[match.events.cleanSheet]) stats[match.events.cleanSheet].cleanSheets += 1;
+  });
+
+  return stats;
+}
+
+function renderPlayerStats() {
+  const stats = calculatePlayerStats();
+  const appearances = calculateAppearances();
+  const container = document.getElementById("playerStats");
+  container.innerHTML = "";
+
+  Object.keys(stats).forEach(player => {
+    const div = document.createElement("div");
+    div.className = "player-card";
+    div.setAttribute("aria-label", `${player}: ${appearances[player] || 0} appearances, ${stats[player].goals} goals, ${stats[player].assists} assists, ${stats[player].motm} player-of-the-match awards, ${stats[player].cleanSheets} clean sheets`);
+    div.innerHTML = `
+      <strong>${player}</strong>
+      <div class="contribution-grid"><div class="contribution-pill"><span>Appearances</span><strong>${appearances[player] || 0}</strong></div><div class="contribution-pill"><span>Goals</span><strong>${stats[player].goals}</strong></div>
+      <div class="contribution-pill"><span>Assists</span><strong>${stats[player].assists}</strong></div><div class="contribution-pill"><span>POTM</span><strong>${stats[player].motm}</strong></div>
+      <div class="contribution-pill"><span>Clean sheets</span><strong>${stats[player].cleanSheets}</strong></div></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+/* APPEARANCE HEATMAP */
+function calculateAppearances() {
+  const apps = {};
+  data.squad.forEach(p => apps[p.name] = 0);
+
+  data.matches.forEach(match => {
+    match.startingXI.forEach(player => { if (Object.prototype.hasOwnProperty.call(apps, player)) apps[player] += 1; });
+    if (match.subs) match.subs.forEach(player => { if (Object.prototype.hasOwnProperty.call(apps, player)) apps[player] += 1; });
+  });
+
+  return apps;
+}
+
+function renderAppearanceHeatmap() {
+  const container = document.getElementById("appearanceHeatmap");
+  container.innerHTML = "";
+
+  const apps = calculateAppearances();
+  const maxApps = Math.max(0, ...Object.values(apps));
+
+  Object.keys(apps).forEach(player => {
+    const intensity = apps[player] === 0 || maxApps === 0
+      ? "#999"
+: `rgba(124, 92, 252, ${0.32 + (apps[player] / maxApps) * 0.68})`;
+
+    const box = document.createElement("div");
+    box.className = "heat-box";
+    box.style.background = intensity;
+    box.setAttribute("aria-label", `${player}, ${apps[player]} appearance${apps[player] === 1 ? "" : "s"}`); box.innerHTML = `${player}<br><small>${apps[player]} appearance${apps[player] === 1 ? "" : "s"}</small>`;
+    container.appendChild(box);
+  });
+}
+
+/* PLAYER LEADERBOARD */
+function renderPlayerLeaderboards() {
+  const stats = calculatePlayerStats();
+  renderLeaderboardPanel("goals", "goalsLeaderboard", document.getElementById("goalsLeaderboardSort")?.value || "desc", stats);
+  renderLeaderboardPanel("assists", "assistsLeaderboard", document.getElementById("assistsLeaderboardSort")?.value || "desc", stats);
+}
+
+function renderLeaderboardPanel(metric, containerId, sortMode, stats) {
+  const container = document.getElementById(containerId);
+  const metricTitle = metric === "goals" ? "Goals" : "Assists";
+  const metricNoun = metric === "goals" ? "goal" : "assist";
+  const isNameSort = sortMode.startsWith("name");
+  let sorted = Object.entries(stats).filter(([_, s]) => s[metric] > 0);
+  sorted.sort((a, b) => sortMode === "asc" ? a[1][metric] - b[1][metric] || a[0].localeCompare(b[0]) : sortMode === "name-asc" ? a[0].localeCompare(b[0]) : sortMode === "name-desc" ? b[0].localeCompare(a[0]) : b[1][metric] - a[1][metric] || a[0].localeCompare(b[0]));
+  const maxMetric = sorted.length ? Math.max(...sorted.map(([_, s]) => s[metric])) : 0;
+  const leaderNames = sorted.filter(([_, s]) => s[metric] === maxMetric).map(([name]) => name);
+  const rankLookup = {};
+  let previousValue = null, displayRank = 0;
+  [...sorted].sort((a, b) => b[1][metric] - a[1][metric] || a[0].localeCompare(b[0])).forEach(([name, s], index) => { if (s[metric] !== previousValue) displayRank = index + 1; rankLookup[name] = displayRank; previousValue = s[metric]; });
+  container.innerHTML = "<div class='leaderboard-context' role='status' aria-live='polite'></div><div class='leaderboard-insights' role='group' aria-label='Leaderboard summary insights'></div><div class='leaderboard-list' role='list' aria-label='Ranked player list'></div>";
+  const label = maxMetric === 1 ? metricNoun : `${metricNoun}s`;
+  container.querySelector(".leaderboard-context").textContent = isNameSort ? `${metricTitle} leaderboard shown alphabetically. Ranking emphasis is hidden.` : `${metricTitle} leaderboard sorted ${sortMode === "asc" ? "low to high" : "high to low"}. Ranks still reflect highest ${label} total.`;
+  container.querySelector(".leaderboard-insights").innerHTML = `<div class="leaderboard-insight"><span>Leader${leaderNames.length === 1 ? "" : "s"}</span><strong>${leaderNames.length ? leaderNames.join(", ") : "No data yet"}</strong></div><div class="leaderboard-insight"><span>Highest total</span><strong>${maxMetric} ${label}</strong></div><div class="leaderboard-insight"><span>Players listed</span><strong>${sorted.length}</strong></div>`;
+  const list = container.querySelector(".leaderboard-list");
+  sorted.forEach(([player, s]) => { const rank = rankLookup[player]; const row = document.createElement("div"); const value = s[metric]; const valueLabel = value === 1 ? metricNoun : `${metricNoun}s`; const percentage = maxMetric ? Math.round((value / maxMetric) * 100) : 0; row.className = `leaderboard-card ${isNameSort ? "neutral" : rank <= 3 ? `rank-${rank}` : ""}`; row.setAttribute("role", "listitem"); row.setAttribute("aria-label", `${player}, ${value} ${valueLabel}${isNameSort ? "" : `, rank ${rank}`}. This is ${percentage}% of the leading ${metricNoun} total.`); row.innerHTML = `<div class="leaderboard-rank" aria-label="${isNameSort ? "Player" : `Rank ${rank}`}">${isNameSort ? "—" : rank}</div><div class="leaderboard-player"><strong>${player}</strong><span>${isNameSort ? "Player profile" : rank === 1 ? (leaderNames.length > 1 ? `Joint top ${metric === "goals" ? "scorer" : "creator"}` : `Top ${metric === "goals" ? "scorer" : "creator"}`) : rank === 2 ? "Second place" : rank === 3 ? "Third place" : "Squad contribution"}</span></div><div class="leaderboard-goals">${value}<span>${valueLabel}</span></div><div class="leaderboard-progress" aria-hidden="true"><span style="width:${percentage}%"></span></div>`; list.appendChild(row); });
+  if (!sorted.length) container.innerHTML = `<p>No ${metricTitle.toLowerCase()} recorded yet. ${metricTitle} will appear once match events are added.</p>`;
+}
+
+/* PLAYER COMPARISON */
+function populateComparisonDropdowns() {
+  const a = document.getElementById("compareA");
+  const b = document.getElementById("compareB");
+  a.innerHTML = ""; b.innerHTML = "";
+  data.squad.forEach(p => {
+    const optA = document.createElement("option");
+    optA.value = p.name;
+    optA.textContent = p.name;
+    const optB = document.createElement("option");
+    optB.value = p.name;
+    optB.textContent = p.name;
+    a.appendChild(optA);
+    b.appendChild(optB);
+  });
+}
+
+function renderComparison() {
+  const pA = document.getElementById("compareA").value;
+  const pB = document.getElementById("compareB").value;
+
+  if (pA === pB) {
+    document.getElementById("comparisonResult").innerHTML =
+      "<p>Please select two different players.</p>";
+    return;
+  }
+
+  const stats = calculatePlayerStats();
+  const a = stats[pA];
+  const b = stats[pB];
+  const appearances = calculateAppearances();
+
+  document.getElementById("comparisonResult").innerHTML = `
+    <div class="comparison-grid">
+      <div class="comparison-card" role="group" aria-label="${pA} comparison statistics"><h3>${pA}</h3><div class="comparison-stat"><span>Goals</span><strong>${a.goals}</strong></div><div class="comparison-stat"><span>Assists</span><strong>${a.assists}</strong></div><div class="comparison-stat"><span>Appearances</span><strong>${appearances[pA] || 0}</strong></div><div class="comparison-stat"><span>Player of the Match awards</span><strong>${a.motm}</strong></div><div class="comparison-stat"><span>Clean Sheets</span><strong>${a.cleanSheets}</strong></div></div>
+      <div class="comparison-card" role="group" aria-label="${pB} comparison statistics"><h3>${pB}</h3><div class="comparison-stat"><span>Goals</span><strong>${b.goals}</strong></div><div class="comparison-stat"><span>Assists</span><strong>${b.assists}</strong></div><div class="comparison-stat"><span>Appearances</span><strong>${appearances[pB] || 0}</strong></div><div class="comparison-stat"><span>Player of the Match awards</span><strong>${b.motm}</strong></div><div class="comparison-stat"><span>Clean Sheets</span><strong>${b.cleanSheets}</strong></div></div>
+    </div>
+  `;
+}
+
+/* MATCH TIMELINE */
+function renderMatchTimeline() {
+  const container = document.getElementById("matchTimeline");
+  container.innerHTML = "<div class='timeline-list'></div>";
+  const filter = document.getElementById("timelineFilter")?.value || "all";
+  const filteredMatches = data.matches.filter(match => filter === "all" || match.result === filter || match.type === filter).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const list = container.querySelector(".timeline-list");
+
+  if (filteredMatches.length === 0) {
+    container.innerHTML = filter === "all" ? "<p>No match events yet. Completed matches will appear here once results are recorded.</p>" : `<p>No matches found for this filter. Try another timeline filter or choose All matches.</p>`;
+    return;
+  }
+
+  const resultLabels = { W: "Win", D: "Draw", L: "Loss" };
+  const resultClass = { W: "win", D: "draw", L: "loss" };
+  filteredMatches.forEach(match => {
+    const div = document.createElement("div");
+    div.className = `timeline-card result-${match.result.toLowerCase()}`;
+    div.setAttribute("tabindex", "0");
+    div.setAttribute("role", "button");
+    div.setAttribute("aria-label", `${formatDateFull(match.date)} ${match.homeAway} vs ${match.opponent}. ${resultLabels[match.result]} ${match.score.for}-${match.score.against}. Press Enter to show details.`);
+    div.setAttribute("aria-expanded", "false");
+
+    const goals = match.events.goals
+      .map(g => `${g.player} (${g.count})`)
+      .join(", ");
+
+    const assists = match.events.assists
+      .map(a => `${a.player}`)
+      .join(", ");
+
+    div.innerHTML = `
+      <div class="timeline-topline"><div><span class="timeline-date">${formatDateFull(match.date)} • ${match.type}</span><div class="timeline-fixture">${match.homeAway} vs ${match.opponent}</div><div class="timeline-meta">Completed fixture</div><span class="timeline-action" aria-hidden="true">View details</span></div><div class="timeline-score"><strong>${match.score.for}-${match.score.against}</strong><span class="timeline-result ${resultClass[match.result]}">${resultLabels[match.result]}</span></div></div>
+      <div class="timeline-detail-grid" role="group" aria-label="Expanded match details">
+        <div class="timeline-detail" role="group" aria-label="Goals scored in this match"><span>Goals</span><div class="timeline-chips" aria-label="Goal scorers">${goals ? goals.split(", ").map(item => `<span class="timeline-chip" aria-label="${item}">${item}</span>`).join("") : `<span class="timeline-chip" aria-label="No goals recorded">None</span>`}</div></div>
+        <div class="timeline-detail" role="group" aria-label="Assists recorded in this match"><span>Assists</span><div class="timeline-chips" aria-label="Assists">${assists ? assists.split(", ").map(item => `<span class="timeline-chip" aria-label="${item}">${item}</span>`).join("") : `<span class="timeline-chip" aria-label="No assists recorded">None</span>`}</div></div>
+        <div class="timeline-detail timeline-motm" role="group" aria-label="Player of the Match"><span>Player of the Match</span><div class="timeline-chips" aria-label="Player of the Match winner"><span class="timeline-chip" aria-label="${match.events.motm || "Not recorded"}">${match.events.motm || "Not recorded"}</span></div></div>
+      </div>
+    `;
+    div.addEventListener("click", () => { div.classList.toggle("expanded"); const expanded = div.classList.contains("expanded"); div.setAttribute("aria-expanded", expanded ? "true" : "false"); div.querySelector(".timeline-action").textContent = expanded ? "Hide details" : "View details"; div.setAttribute("aria-label", `${formatDateFull(match.date)} ${match.homeAway} vs ${match.opponent}. ${resultLabels[match.result]} ${match.score.for}-${match.score.against}. ${expanded ? "Details shown." : "Press Enter to show details."}`); });
+    div.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); div.click(); } });
+    list.appendChild(div);
+  });
+}
+
+/* SEASON SUMMARY */
+function renderSeasonSummary() {
+  const container = document.getElementById("seasonSummary");
+  if (data.matches.length === 0) {
+    container.innerHTML = "<p>No season summary yet. Match totals, goals and assists will appear once results are recorded.</p>";
+    return;
+  }
+
+  const stats = calculatePlayerStats();
+  const totalAssists = Object.values(stats)
+    .reduce((sum, p) => sum + p.assists, 0);
+  const wins = data.matches.filter(m => m.result === "W").length;
+  const draws = data.matches.filter(m => m.result === "D").length;
+  const losses = data.matches.filter(m => m.result === "L").length;
+
+  const goalsFor = data.matches.reduce((sum, match) => sum + (match.score ? match.score.for : 0), 0);
+  const goalsAgainst = data.matches.reduce((sum, match) => sum + (match.score ? match.score.against : 0), 0);
+  const goalDifference = goalsFor - goalsAgainst;
+  const played = data.matches.length;
+  container.innerHTML = `
+    <div class="summary-hero" role="group" aria-label="Season record: ${wins} wins, ${draws} draws, ${losses} losses from ${played} matches"><h3>Season record</h3><div class="summary-record">${wins}W ${draws}D ${losses}L <span>from ${played} matches</span></div><p class="summary-note" style="color:rgba(255,255,255,0.72);">Current campaign snapshot across completed fixtures.</p></div>
+    <div class="summary-grid">
+      <div class="summary-card" role="group" aria-label="Goals for: ${goalsFor} total goals scored"><span class="summary-label">Goals for</span><span class="summary-value">${goalsFor}</span><p class="summary-note">Total goals scored</p></div>
+      <div class="summary-card" role="group" aria-label="Goals against: ${goalsAgainst} total goals conceded"><span class="summary-label">Goals against</span><span class="summary-value">${goalsAgainst}</span><p class="summary-note">Total goals conceded</p></div>
+      <div class="summary-card" role="group" aria-label="Goal difference: ${goalDifference > 0 ? "+" : ""}${goalDifference}, scored minus conceded"><span class="summary-label">Goal difference</span><span class="summary-value">${goalDifference > 0 ? "+" : ""}${goalDifference}</span><p class="summary-note">Scored minus conceded</p></div>
+      <div class="summary-card" role="group" aria-label="Assists: ${totalAssists} recorded assists"><span class="summary-label">Assists</span><span class="summary-value">${totalAssists}</span><p class="summary-note">Recorded assists</p></div>
+    </div>
+  `;
+}
+function renderSeasonSnapshot() { const container = document.getElementById("seasonSnapshot"); const wins = data.matches.filter(m => m.result === "W").length; const goalsFor = data.matches.reduce((sum, match) => sum + (match.score ? match.score.for : 0), 0); const goalsAgainst = data.matches.reduce((sum, match) => sum + (match.score ? match.score.against : 0), 0); const goalDifference = goalsFor - goalsAgainst; container.innerHTML = `<div class="snapshot-card" role="group" aria-label="Matches played: ${data.matches.length}"><span>Played</span><strong>${data.matches.length}</strong></div><div class="snapshot-card" role="group" aria-label="Wins: ${wins}"><span>Wins</span><strong>${wins}</strong></div><div class="snapshot-card" role="group" aria-label="Goals for: ${goalsFor}"><span>Goals for</span><strong>${goalsFor}</strong></div><div class="snapshot-card" role="group" aria-label="Goal difference: ${goalDifference > 0 ? "+" : ""}${goalDifference}"><span>Goal difference</span><strong>${goalDifference > 0 ? "+" : ""}${goalDifference}</strong></div>`; }
+function renderTeamLeaders() { const container = document.getElementById("teamLeaders"); const stats = calculatePlayerStats(); const apps = calculateAppearances(); const leadersFor = (entries, valueFn, singular, plural) => { const values = entries.map(entry => valueFn(entry)); const max = Math.max(0, ...values); const label = max === 1 ? singular : plural; return max > 0 ? `${entries.filter(entry => valueFn(entry) === max).map(entry => Array.isArray(entry) ? entry[0] : entry.name).join(", ")} — ${max} ${label}` : "No data yet"; }; const statEntries = Object.entries(stats); const scorer = leadersFor(statEntries, entry => entry[1].goals, "goal", "goals"); const assister = leadersFor(statEntries, entry => entry[1].assists, "assist", "assists"); const motm = leadersFor(statEntries, entry => entry[1].motm, "award", "awards"); const mostApps = leadersFor(Object.entries(apps), entry => entry[1], "appearance", "appearances"); container.innerHTML = `<div class="leader-card" role="group" aria-label="Top scorer: ${scorer}"><span>Top scorer</span><strong>${scorer}</strong></div><div class="leader-card" role="group" aria-label="Top assister: ${assister}"><span>Top assister</span><strong>${assister}</strong></div><div class="leader-card" role="group" aria-label="Most appearances: ${mostApps}"><span>Most appearances</span><strong>${mostApps}</strong></div><div class="leader-card" role="group" aria-label="Most player of the match awards: ${motm}"><span>Most POTM awards</span><strong>${motm}</strong></div>`; }
+
+/* APPEARANCE BREAKDOWN */
+function renderAppearanceBreakdown() {
+  const tbody = document.querySelector("#appearanceMatrix tbody");
+  tbody.innerHTML = "";
+  const sortMode = document.getElementById("appearanceSort")?.value || "total-desc";
+
+  const rows = data.squad.map(player => {
+    const name = player.name;
+    let friendlies = 0;
+    let league = 0;
+    let cup = 0;
+
+    data.matches.forEach(match => {
+      const played =
+        match.startingXI.includes(name) ||
+        (match.subs && match.subs.includes(name));
+
+      if (played) {
+        if (match.type === "Friendly") friendlies++;
+        else if (match.type === "League") league++;
+        else if (match.type === "Cup") cup++;
+      }
+    });
+
+    const total = friendlies + league + cup;
+
+    return { name, friendlies, league, cup, total };
+  });
+  rows.sort((a, b) => sortMode === "total-asc" ? a.total - b.total || a.name.localeCompare(b.name) : sortMode === "name-asc" ? a.name.localeCompare(b.name) : sortMode === "name-desc" ? b.name.localeCompare(a.name) : b.total - a.total || a.name.localeCompare(b.name));
+  rows.forEach(({ name, friendlies, league, cup, total }) => { const row = document.createElement("tr"); row.setAttribute("aria-label", `${name}: ${friendlies} friendly appearances, ${league} league appearances, ${cup} cup appearances, ${total} total appearances`); row.innerHTML = `<td><strong>${name}</strong></td><td>${friendlies}</td><td>${league}</td><td>${cup}</td><td>${total}</td>`; tbody.appendChild(row); });
+}
+
+
+/* INIT */
+function init() {
+  setupTabs();
+  renderSquad();
+  renderFixtures();
+  renderLeagueCentre();
+  renderNextMatch();
+  renderMatchdayHero();
+  renderSeasonSnapshot();
+  renderTeamLeaders();
+  renderLastMatch();
+  renderSeasonProgress();
+  renderFormGraph();
+  renderPlayerStats();
+  renderAppearanceHeatmap();
+  renderPlayerLeaderboards();
+  populateComparisonDropdowns();
+  renderMatchTimeline();
+  renderSeasonSummary();
+  renderAppearanceBreakdown();
+
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
 # harleston-hurricanesv2
